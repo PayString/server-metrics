@@ -17,17 +17,14 @@
   "scripts": {
     "build": "rm -rf build && tsc --project .",
     "buildWatch": "tsc --watch --project .",
-    "lint": "eslint . --ext .ts --fix --max-warnings 0 && prettier --write '**/*.{md,json}' && npm run compareVersions",
-    "lintNoFix": "eslint . --ext .ts --max-warnings 0 && prettier --check '**/*.{md,json}' && npm run compareVersions",
+    "lint": "eslint . --ext .ts --fix --max-warnings 0 && prettier --write '**/*.{md,json}'",
+    "lintNoFix": "eslint . --ext .ts --max-warnings 0 && prettier --check '**/*.{md,json}'",
     "lintWatch": "chokidar src/**/*.ts -c \"npm run lint\" --initial --verbose",
     "prestart": "npm run build",
     "start": "node build/src/index.js",
     "startWatch": "tsc-watch --onSuccess 'npm run start'",
     "test": "nyc mocha 'test/**/*.test.ts'",
-    "testWatch": "nyc mocha --watch 'test/**/*.test.ts'",
-    "compareVersions": "bash -c '. ./scripts/version.sh && compare_versions $npm_package_version'",
-    "bump": "bash -c '. ./scripts/version.sh && bump $npm_package_version'",
-    "release": "hub release create -d -m $npm_package_version $npm_package_version"
+    "testWatch": "nyc mocha --watch 'test/**/*.test.ts'"
   },
   "dependencies": {
     "log4js": "^6.3.0",
@@ -37,6 +34,7 @@
   },
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.2",
+    "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.23",
