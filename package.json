@@ -1,5 +1,5 @@
 {
-  "name": "payid-metrics",
+  "name": "@payid-org/payid-metrics",
   "version": "0.1.0",
   "description": "Metrics library for a PayID server",
   "keywords": [],
