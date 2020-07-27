@@ -38,14 +38,10 @@ export default function checkMetricsConfiguration(config: MetricsConfig): void {
 
   try {
     // eslint-disable-next-line no-new -- We are using Node's URL library to see if the URL is valid.
-    new URL(`https://${config.domain ?? 'example.com'}`)
-    // We use example.com as a default because this check should always pass if PAYID_DOMAIN is unset,
-    // because we can infer the domain from the first Public API request.
+    new URL(`https://${config.domain}`)
   } catch {
     throw new Error(
-      `Push metrics are enabled, but the environment variable PAYID_DOMAIN is not a valid url: "${
-        config.domain ?? 'example.com'
-      }".`,
+      `Push metrics are enabled, but the environment variable PAYID_DOMAIN is not a valid url: "${config.domain}".`,
     )
   }
 

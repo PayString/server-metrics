@@ -4,10 +4,6 @@
 pre-push:
   parallel: true
   commands:
-    # Disable audits
-    # packages-audit:
-    #   tags: security
-    #   run: npm audit
     eslint:
       tags: style
       run: npm run lintNoFix

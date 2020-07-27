@@ -2,18 +2,18 @@
  * Query result record for a count of addresses by environment and paymentNetwork.
  */
 export interface AddressCount {
-  paymentNetwork: string
-  environment: string
-  count: number
+  readonly paymentNetwork: string
+  readonly environment: string
+  readonly count: number
 }
 
 /**
  * Metrics configuration.
  */
 export interface MetricsConfig {
-  pushMetrics: boolean
-  domain: string | undefined
-  gatewayUrl: string
-  pushIntervalInSeconds: number
-  payIdCountRefreshIntervalInSeconds: number
+  readonly pushMetrics: boolean
+  readonly domain: string
+  readonly gatewayUrl: string
+  readonly pushIntervalInSeconds: number
+  readonly payIdCountRefreshIntervalInSeconds: number
 }

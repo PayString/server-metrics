@@ -1,8 +1,9 @@
 import { hostname } from 'os'
 
-import { Logger } from 'log4js'
 import { Counter, Gauge, Pushgateway, Registry } from 'prom-client'
 
+import checkMetricsConfiguration from './check'
+import logger from './logger'
 import { AddressCount, MetricsConfig } from './types'
 
 /**
@@ -39,29 +40,25 @@ export default class Metrics {
   private recurringMetricsTimeout?: NodeJS.Timeout
 
   // These are passed in from the constructor
+  private readonly config: MetricsConfig
   private readonly getAddressCounts: () => Promise<AddressCount[]>
   private readonly getPayIdCount: () => Promise<number>
-  private readonly config: MetricsConfig
-  private readonly log: Logger
 
   /**
    * Create a new Metrics instance.
    *
+   * @param config - The metrics configuration object.
    * @param addressCountFn - A function to retrieve count of addresses, grouped by payment network and environment.
    * @param payIdCountFn - A function to retrieve the count of PayIDs in the database.
-   * @param config - The metrics configuration object.
-   * @param log - A log4j logger instance.
    */
   public constructor(
+    config: MetricsConfig,
     addressCountFn: () => Promise<AddressCount[]>,
     payIdCountFn: () => Promise<number>,
-    config: MetricsConfig,
-    log: Logger,
   ) {
     this.getAddressCounts = addressCountFn
     this.getPayIdCount = payIdCountFn
     this.config = config
-    this.log = log
 
     this.payIdLookupCounterRegistry = new Registry()
     this.payIdGaugeRegistry = new Registry()
@@ -97,7 +94,7 @@ export default class Metrics {
    */
   public areMetricsRunning(): boolean {
     return (
-      Boolean(this.recurringMetricsPushTimeout) &&
+      Boolean(this.recurringMetricsPushTimeout) ||
       Boolean(this.recurringMetricsTimeout)
     )
   }
@@ -106,10 +103,13 @@ export default class Metrics {
    * Attempt to schedule a recurring metrics push to the metrics gateway URL.
    * Configured through the environment/defaults set in the PayID app config.
    */
+  // eslint-disable-next-line max-lines-per-function -- Prometheus library is verbose.
   public scheduleRecurringMetricsPush(): void {
-    if (!this.config.pushMetrics || !this.config.domain) {
+    if (!this.config.pushMetrics) {
       return
     }
+
+    checkMetricsConfiguration(this.config)
 
     const payIdLookupCounterGateway = new Pushgateway(
       this.config.gatewayUrl,
@@ -137,7 +137,7 @@ export default class Metrics {
         },
         (err, _resp, _body): void => {
           if (err) {
-            this.log.warn('counter metrics push failed with ', err)
+            logger.warn('counter metrics push failed with ', err)
           }
         },
       )
@@ -152,7 +152,7 @@ export default class Metrics {
         },
         (err, _resp, _body): void => {
           if (err) {
-            this.log.warn('gauge metrics push failed with ', err)
+            logger.warn('gauge metrics push failed with ', err)
           }
         },
       )
@@ -163,26 +163,25 @@ export default class Metrics {
    * Set a recurring timer that will generate PayID count metrics every PAYID_COUNT_REFRESH_INTERVAL seconds.
    */
   public scheduleRecurringPayIdCountMetrics(): void {
+    checkMetricsConfiguration(this.config)
+
     const refreshIntervalInSeconds = this.config
       .payIdCountRefreshIntervalInSeconds
 
     // Generate the metrics immediately so we don't wait for the interval
     this.generateAddressCountMetrics().catch((err) =>
-      this.log.warn('Failed to generate initial address count metrics', err),
+      logger.warn('Failed to generate initial address count metrics', err),
     )
     this.generatePayIdCountMetrics().catch((err) =>
-      this.log.warn('Failed to generate initial PayID count metrics', err),
+      logger.warn('Failed to generate initial PayID count metrics', err),
     )
 
     this.recurringMetricsTimeout = setInterval(() => {
       this.generateAddressCountMetrics().catch((err) =>
-        this.log.warn(
-          'Failed to generate scheduled address count metrics',
-          err,
-        ),
+        logger.warn('Failed to generate scheduled address count metrics', err),
       )
       this.generatePayIdCountMetrics().catch((err) =>
-        this.log.warn('Failed to generate scheduled PayID count metrics', err),
+        logger.warn('Failed to generate scheduled PayID count metrics', err),
       )
     }, refreshIntervalInSeconds * 1000)
   }
@@ -272,7 +271,6 @@ export default class Metrics {
 
   /** Generates the count of PayIDs. */
   public async generatePayIdCountMetrics(): Promise<void> {
-    // TODO: Should this just return a number?
     const payIdCount = await this.getPayIdCount()
 
     this.payIdGauge.set(
