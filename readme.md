@@ -1,4 +1,4 @@
-# `@payid-org/metrics`
+# `@payid-org/payid-metrics`
 
 A TypeScript library providing PayID metrics support.
 
