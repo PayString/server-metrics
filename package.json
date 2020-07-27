@@ -24,7 +24,10 @@
     "start": "node build/src/index.js",
     "startWatch": "tsc-watch --onSuccess 'npm run start'",
     "test": "nyc mocha 'test/**/*.test.ts'",
-    "testWatch": "nyc mocha --watch 'test/**/*.test.ts'"
+    "testWatch": "nyc mocha --watch 'test/**/*.test.ts'",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lintNoFix & npm run test",
+    "preversion": "npm run lintNoFix & npm run test"
   },
   "dependencies": {
     "log4js": "^6.3.0",
