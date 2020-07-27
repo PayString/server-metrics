@@ -3,6 +3,7 @@ import { hostname } from 'os'
 import { Logger } from 'log4js'
 import { Counter, Gauge, Pushgateway, Registry } from 'prom-client'
 
+import checkMetricsConfiguration from './check'
 import { AddressCount, MetricsConfig } from './types'
 
 /**
@@ -41,8 +42,13 @@ export default class Metrics {
   // These are passed in from the constructor
   private readonly getAddressCounts: () => Promise<AddressCount[]>
   private readonly getPayIdCount: () => Promise<number>
-  private readonly config: MetricsConfig
+  // TODO: Can we make this a callback function for logging?
+  // Could be `log.warn()`, could be `console.log()`, etc.
+  // Then we don't need the log4js dependency in here either.
+  //
+  // OR, should we just slice out the PayID logger into it's own library and take a dependency on that? (Probably yes?)
   private readonly log: Logger
+  private readonly config: MetricsConfig
 
   /**
    * Create a new Metrics instance.
@@ -55,6 +61,7 @@ export default class Metrics {
   public constructor(
     addressCountFn: () => Promise<AddressCount[]>,
     payIdCountFn: () => Promise<number>,
+    // TODO: Can config be first in this list? (Since it isn't a callback?)
     config: MetricsConfig,
     log: Logger,
   ) {
@@ -96,6 +103,8 @@ export default class Metrics {
    * @returns A boolean indicating whether metrics are currently running.
    */
   public areMetricsRunning(): boolean {
+    // TODO: This isn't really true, right?
+    // If config.pushMetrics is off, then MetricsPushTimeout doesn't really matter?
     return (
       Boolean(this.recurringMetricsPushTimeout) &&
       Boolean(this.recurringMetricsTimeout)
@@ -106,10 +115,13 @@ export default class Metrics {
    * Attempt to schedule a recurring metrics push to the metrics gateway URL.
    * Configured through the environment/defaults set in the PayID app config.
    */
+  // eslint-disable-next-line max-lines-per-function -- Prometheus library is verbose.
   public scheduleRecurringMetricsPush(): void {
-    if (!this.config.pushMetrics || !this.config.domain) {
+    if (!this.config.pushMetrics) {
       return
     }
+
+    checkMetricsConfiguration(this.config)
 
     const payIdLookupCounterGateway = new Pushgateway(
       this.config.gatewayUrl,
@@ -163,6 +175,8 @@ export default class Metrics {
    * Set a recurring timer that will generate PayID count metrics every PAYID_COUNT_REFRESH_INTERVAL seconds.
    */
   public scheduleRecurringPayIdCountMetrics(): void {
+    checkMetricsConfiguration(this.config)
+
     const refreshIntervalInSeconds = this.config
       .payIdCountRefreshIntervalInSeconds
 
@@ -272,7 +286,6 @@ export default class Metrics {
 
   /** Generates the count of PayIDs. */
   public async generatePayIdCountMetrics(): Promise<void> {
-    // TODO: Should this just return a number?
     const payIdCount = await this.getPayIdCount()
 
     this.payIdGauge.set(

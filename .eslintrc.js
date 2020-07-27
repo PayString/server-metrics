@@ -20,21 +20,11 @@ module.exports = {
     es2020: true, // Add all ECMAScript 2020 globals and automatically set the ecmaVersion parser option to ES2020
   },
 
-  plugins: ['import', 'node'],
+  plugins: ['import'],
 
   extends: ['@xpring-eng/eslint-config-base/loose'],
 
-  rules: {
-    // We explicitly use `process.exit()` because all other errors should really be handled.
-    'no-process-exit': 'off',
-    'node/no-process-exit': 'off',
-
-    // TODO:(hbergren) These are all rules we should remove eventually
-    'import/max-dependencies': ['warn', { max: 9 }],
-    'max-lines-per-function': ['warn', { max: 86 }],
-    'max-statements': ['warn', { max: 26 }],
-    complexity: ['warn', { max: 12 }],
-  },
+  rules: {},
 
   // TODO:(hbergren) Should be able tor remove these overrides when we remove the above rules
   overrides: [
