@@ -1,6 +1,6 @@
 # `@payid-org/payid-metrics`
 
-![NPM version badge](https://img.shields.io/npm/v/@xpring-eng/logger)
+![NPM version badge](https://img.shields.io/npm/v/@payid-org/payid-metrics)
 
 A TypeScript library providing PayID metrics support.
 
@@ -10,7 +10,7 @@ A TypeScript library providing PayID metrics support.
 import { Metrics, MetricsConfig, AddressCount } from '@payid-org/payid-metrics'
 
 /**
- * SETUP - To configure a metrics server, you will need to define both a valid configuration
+ * SETUP - To configure a PayID server to report metrics, you will need to define both a valid configuration object
  * and 2 data-access functions (getAddressCount & getPayIdCount) to query your database for
  * these statistics.
  */
@@ -25,7 +25,7 @@ const config: MetricsConfig = {
   // Domain name that operates this PayID server
   domain: 'example.com',
 
-  // URL to Xpring Prometheus server Prometheus push gateway
+  // URL to Xpring Prometheus push gateway
   gatewayUrl: 'https://push00.mon.payid.tech/',
 
   // How frequently (in seconds) to push metrics to the Prometheus push gateway
@@ -107,12 +107,15 @@ metrics.stopMetrics()
  */
 
 // Record a successful ( true ) or unsuccessful ( false ) PayID lookup
-// Call this function after each of those events
-//
+// Call this function after each lookup:
+// recordPayIdLookup(lookupSuccess: boolean, paymentNetwork: string, environment: string)
+
+// This is an example call for a successful XRP testnet address lookup
 metrics.recordPayIdLookupResult(true, 'XRPL', 'TESTNET')
 
 // Record an unsuccessful lookup that failed because of a bad accept header
-// Call this function after that event
+// Call this function, instead of recordPayIdLookup, after lookups that fail because
+// of a bad accept header:
 metrics.recordPayIdLookupBadAcceptHeader()
 
 /**
