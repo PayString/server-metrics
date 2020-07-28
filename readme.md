@@ -10,7 +10,7 @@ A TypeScript library providing PayID metrics support.
 import { Metrics, MetricsConfig, AddressCount } from '@payid-org/payid-metrics'
 
 /**
- * SETUP - To configure a metrics server, you will need to define both a valid configuration object
+ * SETUP - To configure a PayID server to report metrics, you will need to define both a valid configuration object
  * and 2 data-access functions (getAddressCount & getPayIdCount) to query your database for
  * these statistics.
  */
@@ -82,6 +82,7 @@ metrics.scheduleRecurringMetricsPush()
 
 // Record a successful ( true ) or unsuccessful ( false ) PayID lookup
 // Call this function after each of those events
+// recordPayIdLookup(lookupSuccess: boolean, paymentNetwork: string, environment: string)
 metrics.recordPayIdLookupResult(true, 'XRPL', 'TESTNET')
 
 // Record an unsuccessful lookup that failed because of a bad accept header
