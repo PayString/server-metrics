@@ -35,20 +35,31 @@ const config: MetricsConfig = {
   payIdCountRefreshIntervalInSeconds: 60,
 }
 
+// TODO: You must implement your own data-access functions to work with your database.
+// Below we show two examples pulled from the reference implementation of the PayID
+// server ( using knex as our query builder ).
+//
+// Source : https://github.com/payid-org/payid/blob/master/src/data-access/reports.ts
+
 /**
  * Retrieve count of addresses, grouped by payment network and environment.
  *
  * @returns A list with the number of addresses that have a given (paymentNetwork, environment) tuple,
  *          ordered by (paymentNetwork, environment).
  */
-async function getAddressCount(): Promise<AddressCount[]> {
-  return [
-    {
-      paymentNetwork: 'XRPL',
-      environment: 'TESTNET',
-      count: 10,
-    },
-  ]
+export async function getAddressCounts(): Promise<AddressCount[]> {
+  const addressCounts: AddressCount[] = await knex
+    .select('address.paymentNetwork', 'address.environment')
+    .count('* as count')
+    .from<AddressCount>('address')
+    .groupBy('address.paymentNetwork', 'address.environment')
+    .orderBy(['address.paymentNetwork', 'address.environment'])
+
+  return addressCounts.map((addressCount) => ({
+    paymentNetwork: addressCount.paymentNetwork,
+    environment: addressCount.environment,
+    count: Number(addressCount.count),
+  }))
 }
 
 /**
@@ -56,14 +67,19 @@ async function getAddressCount(): Promise<AddressCount[]> {
  *
  * @returns The count of PayIDs that exist for this PayID server.
  */
-async function getPayIdCount(): Promise<number> {
-  return 1
+export async function getPayIdCount(): Promise<number> {
+  const payIdCount: number = await knex
+    .count('* as count')
+    .from<Account>('account')
+    .then((record) => {
+      return Number(record[0].count)
+    })
+
+  return payIdCount
 }
 
 /**
- * PUSHING/GENERATING METRICS - To start pushing metrics, you can create a metrics instance,
- * and schedule recurring timers to generate ( from the data-access functions above ) and
- * push metrics.
+ * STARTUP - Now we can create a metrics instance, and start generating & pushing metrics.
  */
 
 // Create metrics instance ( constructs Prometheus gauges )
@@ -76,12 +92,23 @@ metrics.scheduleRecurringMetricsGeneration()
 metrics.scheduleRecurringMetricsPush()
 
 /**
+ * SHUTDOWN - Stop generating metrics ( e.g. On server shutdown / fatal errors ).
+ * It is good practice to shut down all timers, as not doing so can prevent Node
+ * from exiting.
+ */
+
+// Stop recurring metrics generation & push timers
+metrics.stopMetrics()
+
+/**
  * RECORDING LOOKUP METRICS - This metrics library also captures & pushes PayID
- * lookup statistics.
+ * lookup statistics. These are separate from the statistics collected with the
+ * data-access functions.
  */
 
 // Record a successful ( true ) or unsuccessful ( false ) PayID lookup
 // Call this function after each of those events
+//
 metrics.recordPayIdLookupResult(true, 'XRPL', 'TESTNET')
 
 // Record an unsuccessful lookup that failed because of a bad accept header
@@ -89,11 +116,22 @@ metrics.recordPayIdLookupResult(true, 'XRPL', 'TESTNET')
 metrics.recordPayIdLookupBadAcceptHeader()
 
 /**
- * SHUTDOWN - Stop generating metrics ( e.g. On server shutdown / fatal errors ).
+ * PULLING METRICS - Above we set up push metrics, but we can also set up an endpoint
+ * to enable pulling metrics from the PayID server.
  */
 
-// Stop recurring metrics generation & push timers
-metrics.stopMetrics()
+// Create an express router
+const metricsRouter = express.Router()
+
+// Call metrics.getMetrics() when the route is hit
+metricsRouter.get(
+  '/',
+  (_req: Request, res: Response, next: NextFunction): void => {
+    res.set('Content-Type', 'text/plain')
+    res.send(metrics.getMetrics())
+    return next()
+  },
+)
 ```
 
 ## Legal
