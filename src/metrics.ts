@@ -162,7 +162,7 @@ export default class Metrics {
   /**
    * Set a recurring timer that will generate PayID count metrics every PAYID_COUNT_REFRESH_INTERVAL seconds.
    */
-  public scheduleRecurringPayIdCountMetrics(): void {
+  public scheduleRecurringMetricsGeneration(): void {
     checkMetricsConfiguration(this.config)
 
     const refreshIntervalInSeconds = this.config
@@ -189,7 +189,7 @@ export default class Metrics {
   /**
    * Cleans up the Timeouts we use to generate metrics on a recurring schedule.
    */
-  public stopMetricsGeneration(): void {
+  public stopMetrics(): void {
     if (this.recurringMetricsTimeout?.hasRef()) {
       clearInterval(this.recurringMetricsTimeout.ref())
     }
