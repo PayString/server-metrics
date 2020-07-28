@@ -1,7 +1,7 @@
 {
   "name": "@payid-org/server-metrics",
   "version": "1.0.0",
-  "description": "Metrics library for a PayID server",
+  "description": "Helper library to integrate PayID metrics into PayID server implementations",
   "keywords": [],
   "homepage": "https://github.com/payid-org/server-metrics#readme",
   "bugs": {
@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "@xpring-eng/logger": "^1.0.0",
-    "log4js": "^6.3.0",
     "prom-client": "^12.0.0",
     "typescript": "^3.9.5"
   },
