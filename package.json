@@ -1,6 +1,6 @@
 {
   "name": "@payid-org/payid-metrics",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Metrics library for a PayID server",
   "keywords": [],
   "homepage": "https://github.com/payid-org/metrics#readme",
