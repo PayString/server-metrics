@@ -1,4 +1,4 @@
-# `@payid-org/payid-metrics`
+# `@payid-org/server-metrics`
 
 ![NPM version badge](https://img.shields.io/npm/v/@payid-org/payid-metrics)
 
@@ -7,7 +7,7 @@ A TypeScript library providing PayID metrics support.
 ## Usage
 
 ```ts
-import { Metrics, MetricsConfig, AddressCount } from '@payid-org/payid-metrics'
+import { Metrics, MetricsConfig, AddressCount } from '@payid-org/server-metrics'
 
 /**
  * SETUP - To configure a PayID server to report metrics, you will need to define both a valid configuration object

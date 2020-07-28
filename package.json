@@ -1,15 +1,15 @@
 {
-  "name": "@payid-org/payid-metrics",
+  "name": "@payid-org/server-metrics",
   "version": "1.0.0",
   "description": "Metrics library for a PayID server",
   "keywords": [],
-  "homepage": "https://github.com/payid-org/metrics#readme",
+  "homepage": "https://github.com/payid-org/server-metrics#readme",
   "bugs": {
-    "url": "https://github.com/payid-org/metrics/issues"
+    "url": "https://github.com/payid-org/server-metrics/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/payid-org/metrics.git"
+    "url": "git+https://github.com/payid-org/server-metrics.git"
   },
   "license": "Apache-2.0",
   "author": "",
