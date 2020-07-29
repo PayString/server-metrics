@@ -1,6 +1,6 @@
 # `@payid-org/server-metrics`
 
-![NPM version badge](https://img.shields.io/npm/v/@payid-org/payid-metrics)
+![NPM version badge](https://img.shields.io/npm/v/@payid-org/server-metrics)
 
 A TypeScript library providing PayID metrics support.
 
