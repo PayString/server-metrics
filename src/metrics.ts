@@ -295,6 +295,9 @@ export default class Metrics {
     )
   }
 
+  /**
+   * Updates the serverInfoGauge with the current configuration.
+   */
   private updateInfoGauge(): void {
     const serverAgent = this.config.serverAgent ?? 'unknown'
     const protocolVersion = this.config.payIdProtocolVersion
