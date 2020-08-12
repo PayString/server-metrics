@@ -18,7 +18,7 @@ const config = {
   payIdCountRefreshIntervalInSeconds: 60,
 
   // protocol version (i.e. what PayID-Version is supported)
-  payIdProtocolVersion: '1.0.0',
+  payIdProtocolVersion: '1.0',
 
   serverAgent: 'unittest:1.2.3',
 }
