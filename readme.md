@@ -40,7 +40,7 @@ const config: MetricsConfig = {
   serverAgent: '@payid-org/payid:1.2.0',
 
   // the maximum PayID protocol version supported by this PayID server
-  payIdProtocolVersion: string,
+  payIdProtocolVersion: 1.0,
 }
 
 // TODO: You must implement your own data-access functions to work with your database.
