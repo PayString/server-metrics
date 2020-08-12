@@ -37,7 +37,7 @@ const config: MetricsConfig = {
   // (Optional) Identifies the PayID server implementation that's reporting the metrics.
   // This is similar to the user-agent header for web browsers that helps identify the client software version.
   // Recommended format is <library/repo>:<version>
-  serverAgent: '@payid-org/payid:1.0.0',
+  serverAgent: '@payid-org/payid:1.2.0',
 
   // the maximum PayID protocol version supported by this PayID server
   payIdProtocolVersion: string,
