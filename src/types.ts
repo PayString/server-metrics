@@ -16,4 +16,8 @@ export interface MetricsConfig {
   readonly gatewayUrl: string
   readonly pushIntervalInSeconds: number
   readonly payIdCountRefreshIntervalInSeconds: number
+  // serverAgent is an optional field to identify the PayID server implementation that's reporting the metrics.
+  // For example the PayID reference implementation sets this like @payid-org/payid:1.0.0
+  readonly serverAgent?: string
+  readonly payIdProtocolVersion: string
 }
