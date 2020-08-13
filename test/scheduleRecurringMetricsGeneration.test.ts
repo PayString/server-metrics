@@ -41,7 +41,7 @@ describe('Push Metrics - scheduleRecurringMetricsGeneration()', function (): voi
     metrics.scheduleRecurringMetricsGeneration()
 
     assertMetrics(
-      /payid_server_info\{org="example.com",serverAgent="unittest:1.2.3",protocolVersion="1.0.0"\} 1/u,
+      /payid_server_info\{org="example.com",serverAgent="unittest:1.2.3",protocolVersion="1.0"\} 1/u,
     )
 
     assertMetrics(
