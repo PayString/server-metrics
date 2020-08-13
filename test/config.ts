@@ -16,6 +16,11 @@ const config = {
 
   // How frequently (in seconds) to refresh the PayID Count report data from the database
   payIdCountRefreshIntervalInSeconds: 60,
+
+  // protocol version (i.e. what PayID-Version is supported)
+  payIdProtocolVersion: '1.0',
+
+  serverAgent: 'unittest:1.2.3',
 }
 
 export default config

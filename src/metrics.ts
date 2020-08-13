@@ -34,6 +34,11 @@ export default class Metrics {
   /** Prometheus Gauge for reporting the current count of PayIDs by org. */
   private readonly payIdGauge: Gauge<'org'>
 
+  /** Prometheus Gauge for reporting the current count of PayIDs by org. */
+  private readonly serverInfoGauge: Gauge<
+    'org' | 'serverAgent' | 'protocolVersion'
+  >
+
   // These are Timeouts for generating metrics on a recurring basis.
   // To shut down the app properly, we need to clean these up as we shut down.
   private recurringMetricsPushTimeout?: NodeJS.Timeout
@@ -83,6 +88,13 @@ export default class Metrics {
       name: 'actual_payid_count',
       help: 'count of total PayIDs',
       labelNames: ['org'],
+      registers: [this.payIdGaugeRegistry],
+    })
+
+    this.serverInfoGauge = new Gauge({
+      name: 'payid_server_info',
+      help: 'version information for server',
+      labelNames: ['org', 'serverAgent', 'protocolVersion'],
       registers: [this.payIdGaugeRegistry],
     })
   }
@@ -175,6 +187,8 @@ export default class Metrics {
     this.generatePayIdCountMetrics().catch((err) =>
       logger.warn('Failed to generate initial PayID count metrics', err),
     )
+
+    this.updateInfoGauge()
 
     this.recurringMetricsTimeout = setInterval(() => {
       this.generateAddressCountMetrics().catch((err) =>
@@ -278,6 +292,22 @@ export default class Metrics {
         org: this.config.domain,
       },
       payIdCount,
+    )
+  }
+
+  /**
+   * Updates the serverInfoGauge with the current configuration.
+   */
+  private updateInfoGauge(): void {
+    const serverAgent = this.config.serverAgent ?? 'unknown'
+    const protocolVersion = this.config.payIdProtocolVersion
+    this.serverInfoGauge.set(
+      {
+        org: this.config.domain,
+        serverAgent,
+        protocolVersion,
+      },
+      1,
     )
   }
 }
