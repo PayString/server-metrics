@@ -13,7 +13,7 @@ describe('Push Metrics - scheduleRecurringMetricsGeneration()', function (): voi
     metrics.stopMetrics()
   })
 
-  it('publishes all gauges when provide valid functions', async function () {
+  it('publishes all gauges if provided valid functions', async function () {
     const expectedPayIdCount = 5
     const expectedBtcAddressCount = 3
     const expectedXrpAddressCount = 4
